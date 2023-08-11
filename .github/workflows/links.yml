@@ -10,10 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Create token
-        run: echo ${{ secrets.GITHUB_TOKEN }} > secret_github_key
       - name: Build Docker
-        run: cd pwa && docker build --secret id=GITHUB_KEY,src=secret_github_key --tag 'api-platform-website' .
+        run: cd pwa && echo ${{ secrets.GITHUB_TOKEN }} > secret_github_key && docker build --secret id=GITHUB_KEY,src=secret_github_key --tag 'api-platform-website' .
       - name: Run Docker
         run: docker run --detach --name api-platform-container 'api-platform-website'
       - name: Wait service healthy
