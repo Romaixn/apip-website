@@ -14,11 +14,6 @@ jobs:
         run: cd pwa && echo ${{ secrets.GITHUB_TOKEN }} > secret_github_key && docker build --secret id=GITHUB_KEY,src=secret_github_key --tag 'api-platform-website' .
       - name: Run Docker
         run: docker run --detach --name api-platform-container 'api-platform-website'
-      - name: Wait service healthy
-        run: |
-          while [[ $(docker inspect -f '{{.State.Health.Status}}' api-platform-container) != "healthy" ]]; do
-            sleep 1
-          done
       - name: Check reachability
         run: "curl -vk -o /dev/null -H 'Accept: text/html' http://localhost:3000"
       - name: Link Checker
