@@ -12,30 +12,19 @@ jobs:
         uses: actions/checkout@v3
       - name: Create token
         run: echo ${{ secrets.GITHUB_TOKEN }} > secret_github_key
-      - name: Pull images
-        run: docker compose pull --ignore-pull-failures || true
-      - name: Start services
-        run: docker compose up --build -d
-      - name: Wait for services
+      - name: Build Docker
+        run: cd pwa && docker build --tag 'api-platform-website' .
+      - name: Run Docker
+        run: docker run --detach --name api-platform-container 'api-platform-website'
+      - name: Wait service healthy
         run: |
-           while status="$(docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" "$(docker compose ps -q php)")"; do
-             case $status in
-               starting) sleep 1;;
-               healthy) exit 0;;
-               unhealthy)
-                 docker compose ps
-                 docker compose logs
-                 exit 1
-               ;;
-             esac
-           done
-           exit 1
-      - name: Check HTTP reachability
-        run: curl -v -o /dev/null http://localhost
-      - name: Check PWA reachability
-        run: "curl -vk -o /dev/null -H 'Accept: text/html' https://localhost"
+          while [[ $(docker inspect -f '{{.State.Health.Status}}' api-platform-container) != "healthy" ]]; do
+            sleep 1
+          done
+      - name: Check reachability
+        run: "curl -vk -o /dev/null -H 'Accept: text/html' http://localhost:3000"
       - name: Link Checker
         uses: lycheeverse/lychee-action@v1.8.0
         with:
-          args: --verbose --no-progress --insecure https://localhost
+          args: --verbose --no-progress http://localhost:3000
           fail: true
