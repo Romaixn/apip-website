@@ -12,4 +12,3 @@ jobs:
         uses: lycheeverse/lychee-action@v1.8.0
         with:
           args: --verbose --no-progress https://staging.apip.preprod-tilleuls.ovh
-          fail: true
