@@ -102,8 +102,11 @@ RUN xcaddy build v2.6.4 \
 # Caddy image
 FROM caddy:2-alpine AS app_caddy
 
+ARG TARGETARCH
+
 WORKDIR /srv/app
 
-COPY --from=app_caddy_builder --link /usr/bin/caddy /usr/bin/caddy
-# COPY --from=app_php --link /srv/app/public public/
+# Download Caddy compiled with the Mercure and Vulcain modules
+ADD --chmod=500 https://caddyserver.com/api/download?os=linux&arch=$TARGETARCH&p=github.com/dunglas/mercure/caddy&p=github.com/dunglas/vulcain/caddy /usr/bin/caddy
+
 COPY --link docker/caddy/Caddyfile /etc/caddy/Caddyfile
