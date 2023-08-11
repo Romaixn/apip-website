@@ -37,5 +37,5 @@ jobs:
       - name: Link Checker
         uses: lycheeverse/lychee-action@v1.8.0
         with:
-          args: --verbose --no-progress -i https://localhost
-          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --verbose --no-progress --insecure http://localhost
+          fail: true
