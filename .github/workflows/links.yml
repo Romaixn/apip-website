@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Create token
+        run: echo ${{ secrets.GITHUB_TOKEN }} > secret_github_key
       - name: Pull images
         run: docker compose pull --ignore-pull-failures || true
       - name: Start services
